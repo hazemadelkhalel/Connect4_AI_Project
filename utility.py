@@ -1,148 +1,103 @@
+from board import *
+import random
+ROW_COUNT = 6
+COLUMN_COUNT = 7
+WINDOW_LENGTH = 4
+
+PLAYER = 0
+AI = 1
+
 EMPTY = 0
-RED = 1
-BLUE = 2
+AGENT_PIECE = 1
+COMPUTER_PIECE = 2
+def winningMove(board, piece):
+    # Check horizontal locations for win
+    for c in range(COLUMN_COUNT - 3):
+        for r in range(ROW_COUNT):
+            if board[r][c] == piece and board[r][c + 1] == piece and board[r][c + 2] == piece and board[r][
+                c + 3] == piece:
+                return True
 
-def cntVer(board, i, j, player):
-    count = 0
-    tempI = i + 1
-    while tempI < 6 and board[tempI][j] == player:
-        tempI += 1
-        count += 1
-    tempI = i - 1
-    while tempI >= 0 and board[tempI][j] == player:
-        tempI -= 1
-        count += 1
-    return count
-def countVerticalSeq(board, player, cnt):
-    for i in range(0, 6):
-        for j in range(0, 7):
-            if board[i][j] == player:
-                if cntVer(board, i, j, player) + 1 >= cnt:
-                    return 1
-    return 0
+    # Check vertical locations for win
+    for c in range(COLUMN_COUNT):
+        for r in range(ROW_COUNT - 3):
+            if board[r][c] == piece and board[r + 1][c] == piece and board[r + 2][c] == piece and board[r + 3][
+                c] == piece:
+                return True
 
+    # Check positively sloped diaganols
+    for c in range(COLUMN_COUNT - 3):
+        for r in range(ROW_COUNT - 3):
+            if board[r][c] == piece and board[r + 1][c + 1] == piece and board[r + 2][c + 2] == piece and board[r + 3][
+                c + 3] == piece:
+                return True
 
-def cntHor(board, i, j, player):
-    count = 0
-    tempJ = j + 1
-    while tempJ < 7 and board[i][tempJ] == player:
-        tempJ += 1
-        count += 1
-    tempJ = j - 1
-    while tempJ >= 0 and board[i][tempJ] == player:
-        tempJ -= 1
-        count += 1
-    return count
-def countHorizontalSeq(board, player, cnt):
-    for i in range(0, 6):
-        for j in range(0, 7):
-            if board[i][j] == player:
-                if cntHor(board, i, j, player) + 1 >= cnt:
-                    return 1
-    return 0
-
-def cntDiag1(board, i, j, player):
-    count = 0
-    tempJ = j + 1
-    tempI = i + 1
-    while tempJ < 7 and tempI < 6 and board[tempI][tempJ] == player:
-        tempJ += 1
-        tempI += 1
-        count += 1
-    tempJ = j - 1
-    tempI = i - 1
-    while tempI >= 0 and tempJ >= 0 and board[tempI][tempJ] == player:
-        tempJ -= 1
-        tempI -= 1
-        count += 1
-    return count
-def countDiagonalSeq1(board, player, cnt):
-    for i in range(0, 6):
-        for j in range(0, 7):
-            if board[i][j] == player:
-                if cntDiag1(board, i, j, player) + 1 >= cnt:
-                    return 1
-    return 0
-
-def cntDiag2(board, i, j, player):
-    count = 0
-    tempJ = j + 1
-    tempI = i - 1
-    while tempJ < 7 and tempI >= 0 and board[tempI][tempJ] == player:
-        tempJ += 1
-        tempI -= 1
-        count += 1
-    tempJ = j - 1
-    tempI = i + 1
-    while tempI < 6 and tempJ >= 0 and board[tempI][tempJ] == player:
-        tempJ -= 1
-        tempI += 1
-        count += 1
-    return count
-def countDiagonalSeq2(board, player, cnt):
-    for i in range(0, 6):
-        for j in range(0, 7):
-            if board[i][j] == player:
-                if cntDiag2(board, i, j, player) + 1 >= cnt:
-                    return 1
-    return 0
-def checkWin(board, player):
-    count = 0
-    count += countHorizontalSeq(board, player, 4)
-    count += countVerticalSeq(board, player, 4)
-    count += countDiagonalSeq1(board, player, 4)
-    count += countDiagonalSeq2(board, player, 4)
-    return count
-
-def checkLoseState(board, availableMoves, player):
-    for i in range(0, 7):
-        if availableMoves[i] == 6:
-            continue
-        count = 0
-        cnt1 = cntVer(board, availableMoves[i], i, player)
-        cnt2 = cntHor(board, availableMoves[i], i, player)
-        cnt3 = cntDiag1(board, availableMoves[i], i, player)
-        cnt4 = cntDiag2(board, availableMoves[i], i, player)
-        count = max(count, cnt1)
-        count = max(count, cnt2)
-        count = max(count, cnt3)
-        count = max(count, cnt4)
-        if count == 3:
-            return i
-    return -1
-def calculateWeight(board, player):
-    count2 = countHorizontalSeq(board, player, 2)
-    count2 += countVerticalSeq(board, player, 2)
-    count2 += countDiagonalSeq1(board, player, 2)
-    count2 += countDiagonalSeq2(board, player, 2)
-
-    count3 = countHorizontalSeq(board, player, 3)
-    count3 += countVerticalSeq(board, player, 3)
-    count3 += countDiagonalSeq1(board, player, 3)
-    count3 += countDiagonalSeq2(board, player, 3)
-
-    count4 = countHorizontalSeq(board, player, 4)
-    count4 += countVerticalSeq(board, player, 4)
-    count4 += countDiagonalSeq1(board, player, 4)
-    count4 += countDiagonalSeq2(board, player, 4)
-
-    weight = count2 * 10 + count3 * 100 + count4 * 1000
-    return weight
+    # Check negatively sloped diaganols
+    for c in range(COLUMN_COUNT - 3):
+        for r in range(3, ROW_COUNT):
+            if board[r][c] == piece and board[r - 1][c + 1] == piece and board[r - 2][c + 2] == piece and board[r - 3][
+                c + 3] == piece:
+                return True
 
 
-def calculateOverAllScore(board):
-    return calculateWeight(board, RED) - calculateWeight(board, BLUE)
+def calcSegment(window, piece):
+    score = 0
+    opp_piece = AGENT_PIECE
+    if piece == AGENT_PIECE:
+        opp_piece = COMPUTER_PIECE
 
-def canPlay(availableMoves):
-    for i in range(0, 7):
-        if availableMoves[i] != 6:
-            return True
-    return False
-def gameIsOver(board):
-    if checkWin(board, RED) > 0 or checkWin(board, BLUE) > 0:
-        return True
-    else:
-        return False
+    if window.count(piece) == 4:
+        score += 100
+    elif window.count(piece) == 3 and window.count(EMPTY) == 1:
+        score += 5
+    elif window.count(piece) == 2 and window.count(EMPTY) == 2:
+        score += 2
+    if window.count(opp_piece) == 3 and window.count(EMPTY) == 1:
+        score -= 4
+
+    return score
 
 
+def scoreBoard(board, piece):
+    score = 0
+
+    ## Score center column
+    tempBoard = [int(i) for i in list(board[:, COLUMN_COUNT // 2])]
+    center_count = tempBoard.count(piece)
+    score += center_count * 3
+
+    ## GET Score Horizontal
+    for r in range(ROW_COUNT):
+        row_array = [int(i) for i in list(board[r, :])]
+        for c in range(COLUMN_COUNT - 3):
+            window = row_array[c:c + WINDOW_LENGTH]
+            score += calcSegment(window, piece)
+
+    ## GET Score Vertical
+    for c in range(COLUMN_COUNT):
+        col_array = [int(i) for i in list(board[:, c])]
+        for r in range(ROW_COUNT - 3):
+            window = col_array[r:r + WINDOW_LENGTH]
+            score += calcSegment(window, piece)
+
+    ## GET Score posiive sloped diagonal
+    for r in range(ROW_COUNT - 3):
+        for c in range(COLUMN_COUNT - 3):
+            window = [board[r + i][c + i] for i in range(WINDOW_LENGTH)]
+            score += calcSegment(window, piece)
+
+    ## GET Score negative sloped diagonal
+    for r in range(ROW_COUNT - 3):
+        for c in range(COLUMN_COUNT - 3):
+            window = [board[r + 3 - i][c + i] for i in range(WINDOW_LENGTH)]
+            score += calcSegment(window, piece)
+
+    return score
+
+def getValidMoves(board):
+    valid_locations = []
+    for col in range(COLUMN_COUNT):
+        if checkValidLocation(board, col):
+            valid_locations.append(col)
+    return valid_locations
 
