@@ -7,7 +7,7 @@ from tkinter import messagebox
 
 # Global variables
 difficulty = 5
-algorithm = 1
+algorithm = 0
 
 
 def start_game():
@@ -15,14 +15,16 @@ def start_game():
     global algorithm
     difficulty = int(difficulty_var.get())
     if Choose_algorithm == "Random":
-        algorithm = 1
-    else:
         algorithm = 0
+    else:
+        algorithm = 1
+
     difficulty_window.destroy()
     play_game()
 
 
 def play_game():
+    print("%d"%algorithm)
     GUIgame.GUIGame(difficulty, algorithm)
 
 

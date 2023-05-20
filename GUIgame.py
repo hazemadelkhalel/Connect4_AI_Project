@@ -19,7 +19,7 @@ AGENT_PIECE = 1
 COMPUTER_PIECE = 2
 
 
-def draw_board(board,screen,SQUARESIZE,height,RADIUS):
+def draw_board(board, screen, SQUARESIZE, height, RADIUS):
     for c in range(COLUMN_COUNT):
         for r in range(ROW_COUNT):
             pygame.draw.rect(screen, BLUE, (c * SQUARESIZE, r * SQUARESIZE + SQUARESIZE, SQUARESIZE, SQUARESIZE))
@@ -37,7 +37,7 @@ def draw_board(board,screen,SQUARESIZE,height,RADIUS):
     pygame.display.update()
 
 
-def GUIGame(diff,algorithm):
+def GUIGame(diff, algorithm):
     board = create_board()
     print_board(board)
     game_over = False
@@ -54,7 +54,7 @@ def GUIGame(diff,algorithm):
     RADIUS = int(SQUARESIZE / 2.1 - 5)
 
     screen = pygame.display.set_mode(size)
-    draw_board(board,screen,SQUARESIZE,height,RADIUS)
+    draw_board(board, screen, SQUARESIZE, height, RADIUS)
     pygame.display.update()
 
     myfont = pygame.font.SysFont("monospace", 60)
@@ -75,7 +75,7 @@ def GUIGame(diff,algorithm):
                     screen.blit(label, (40, 10))
                     game_over = True
                 print_board(board)
-                draw_board(board,screen,SQUARESIZE,height,RADIUS)
+                draw_board(board, screen, SQUARESIZE, height, RADIUS)
                 turn += 1
                 turn = turn % 2
 
@@ -85,11 +85,14 @@ def GUIGame(diff,algorithm):
                 col, minimax_score = minimax(board, 3, True)
                 if checkValidLocation(board, col):
                     row = getNextValidRow(board, col)
+                print("MINMAX %d"%algorithm)
             else:
                 mov = getValidMoves(board)
-                X = random.randint(0,len(mov)-1)
+                X = random.randint(0, len(mov) - 1)
                 col = mov[X]
-                row = getNextValidRow(board, col)
+                if checkValidLocation(board, col):
+                    row = getNextValidRow(board, col)
+                print("Random %d"%algorithm)
 
             drop_piece(board, row, col, COMPUTER_PIECE)
             if winningMove(board, COMPUTER_PIECE):
@@ -97,7 +100,7 @@ def GUIGame(diff,algorithm):
                 screen.blit(label, (40, 10))
                 game_over = True
             print_board(board)
-            draw_board(board,screen,SQUARESIZE,height,RADIUS)
+            draw_board(board, screen, SQUARESIZE, height, RADIUS)
             turn += 1
             turn = turn % 2
 
