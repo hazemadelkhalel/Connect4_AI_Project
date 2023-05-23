@@ -14,7 +14,7 @@ def start_game():
     global difficulty
     global algorithm
     difficulty = int(difficulty_var.get())
-    if Choose_algorithm == "Random":
+    if Choose_algorithm.get() == "Random":
         algorithm = 0
     else:
         algorithm = 1
